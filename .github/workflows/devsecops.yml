@@ -1,4 +1,4 @@
-﻿name: DocuMagic DevSecOps CI
+﻿name: DocuMagic DevSecOps CI/CD
 
 on:
   push:
@@ -24,6 +24,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # Run Bandit but don't fail the whole job on findings
       - name: Run Bandit security scan
         continue-on-error: true
         run: |
@@ -38,3 +39,27 @@ jobs:
       - name: Python syntax check
         run: |
           python -m compileall app
+
+  build_and_push_docker:
+    needs: security_and_ci
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/documagic-api:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/documagic-api:${{ github.sha }}
