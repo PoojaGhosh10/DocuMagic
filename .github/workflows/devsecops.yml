@@ -64,5 +64,5 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: index.docker.io/poojaghosh10/documagic-api:latest
+          tags: index.docker.io/PoojaGhosh10/documagic-api:latest
 
