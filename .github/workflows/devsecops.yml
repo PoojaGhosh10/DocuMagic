@@ -64,4 +64,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME || 'poojaghosh10' }}/documagic-api:latest
+          tags: poojaghosh10/documagic-api:latest
